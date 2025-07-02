@@ -37,7 +37,6 @@ def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
     Uses :func:`urllib.parse.urljoin` to handle relative paths and replaces any
     Windows-style backslashes with forward slashes.
     """
-
     soup = BeautifulSoup(html, "html.parser")
     links: list[str] = []
     for a in soup.find_all("a", href=True):
