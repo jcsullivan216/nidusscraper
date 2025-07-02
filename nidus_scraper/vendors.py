@@ -17,11 +17,16 @@ VENDOR_PAGES = [
     "https://raw.githubusercontent.com/ouster-lidar/ouster-sdk/master/doc/README.md",
 ]
 
-
 async def fetch_html(session: ClientSession, url: str) -> str:
-    async with session.get(url) as resp:
-        resp.raise_for_status()
-        return await resp.text()
+    try:
+        async with session.get(url) as resp:
+            if resp.status >= 400:
+                logger.warning("Failed to fetch %s: %s", url, resp.status)
+                return ""
+            return await resp.text()
+    except Exception as exc:  # pragma: no cover - network
+        logger.warning("Error fetching %s: %s", url, exc)
+        return ""
 
 
 def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
@@ -53,12 +58,14 @@ async def download_pdf(session: ClientSession, url: str, dest: Path) -> None:
     await update_manifest(dest, url)
     logger.info("Saved %s", dest)
 
-
 async def crawl_vendors(session: ClientSession, workers: int = 32) -> None:
     tasks = []
     sem = asyncio.Semaphore(workers)
     for page in VENDOR_PAGES:
         html = await fetch_html(session, page)
+        if not html:
+            continue
+
         for pdf in extract_pdfs(html, page):
             filename = pdf.split("/")[-1]
             dest = DATA_DIR / "vendors" / filename
