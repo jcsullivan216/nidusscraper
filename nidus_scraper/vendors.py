@@ -27,6 +27,7 @@ VENDOR_PAGES = [
   "https://www.ghostrobotics.io/vision-60",
   "https://www.robotshop.com/",
   "https://www.maritimerobotics.com/",
+  "https://www.anduril.com/"
 ]
 
 async def fetch_html(session: ClientSession, url: str) -> str:
