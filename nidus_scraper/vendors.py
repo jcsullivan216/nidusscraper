@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import urljoin  # <<— this was added from the feature branch
+from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup, Tag
@@ -30,11 +30,11 @@ async def fetch_html(session: ClientSession, url: str) -> str:
         logger.warning("Error fetching %s: %s", url, exc)
         return ""
 
-def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
-    """
-    Return absolute PDF URLs discovered in `html`.
 
-    Uses `urllib.parse.urljoin` to handle relative paths and replaces any
+def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
+    """Return absolute PDF URLs discovered in ``html``.
+
+    Uses :func:`urllib.parse.urljoin` to handle relative paths and replaces any
     Windows-style backslashes with forward slashes.
     """
     soup = BeautifulSoup(html, "html.parser")
@@ -49,9 +49,10 @@ def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
         if href.lower().endswith(".pdf"):
             if not href.startswith("http"):
                 href = urljoin(base_url, href)
-                href = href.replace("\\", "/")
+            href = href.replace("\\", "/")
             links.append(href)
     return links
+
 
 async def download_pdf(session: ClientSession, url: str, dest: Path) -> None:
     async def _get() -> bytes:
@@ -64,14 +65,14 @@ async def download_pdf(session: ClientSession, url: str, dest: Path) -> None:
     await update_manifest(dest, url)
     logger.info("Saved %s", dest)
 
-sync def crawl_vendors(session: ClientSession, workers: int = 32) -> None:
+
+async def crawl_vendors(session: ClientSession, workers: int = 32) -> None:
     tasks = []
     sem = asyncio.Semaphore(workers)
     for page in VENDOR_PAGES:
         html = await fetch_html(session, page)
         if not html:
             continue
-
         for pdf in extract_pdfs(html, page):
             filename = pdf.split("/")[-1]
             dest = DATA_DIR / "vendors" / filename
