@@ -10,11 +10,12 @@ from .config import DATA_DIR, logger
 from .utils import retry, save_file, update_manifest
 
 STANDARD_URLS = [
- # XML schema files (stay the same)
+    # XML schema files (stay the same)
     "https://raw.githubusercontent.com/openjaus/openjaus-toolset/master/schema/jaus.xsd",
     "https://raw.githubusercontent.com/openjaus/openjaus-toolset/master/schema/jaus-mobility.xsd",
     # Actual STANAG 4586 PDF
     "https://archives.defense.gouv.fr/content/download/552732/9407966/file/4586eed3draft.pdf",
+    "https://example.com/stanag-4586-rev-c.pdf",
 ]
 
 
@@ -24,10 +25,18 @@ async def download_standard(session: ClientSession, url: str, dest: Path) -> Non
             resp.raise_for_status()
             return await resp.read()
 
-    content = await retry(_get)
-    await save_file(dest, content)
-    await update_manifest(dest, url)
-    logger.info("Saved %s", dest)
+    try:
+        content = await retry(_get)
+    except Exception as exc:  # noqa: BLE001 - network errors
+        logger.warning("Failed to download %s: %s", url, exc)
+        return
+
+    try:
+        await save_file(dest, content)
+        await update_manifest(dest, url)
+        logger.info("Saved %s", dest)
+    except Exception as exc:  # noqa: BLE001 - file errors
+        logger.warning("Failed to save %s: %s", dest, exc)
 
 
 async def crawl_standards(session: ClientSession, workers: int = 4) -> None:
@@ -42,4 +51,4 @@ async def crawl_standards(session: ClientSession, workers: int = 4) -> None:
                 await download_standard(session, u, p)
 
         tasks.append(asyncio.create_task(worker()))
-    await asyncio.gather(*tasks)
+    await asyncio.gather(*tasks, return_exceptions=True)

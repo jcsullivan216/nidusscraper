@@ -13,23 +13,27 @@ from .config import DATA_DIR, logger
 from .utils import retry, save_file, update_manifest
 
 VENDOR_PAGES = [
-  # Direct PDFs
-  "https://dronecenter.bard.edu/files/2019/10/CSD-Drone-Databook-Web.pdf",
-  "https://www.autelrobotics.com/wp-content/uploads/2024/06/EN_EVO-Nano-Series-Aircraft-User-Manual_V3.0.6.pdf",
-  "https://www.autelrobotics.com/wp-content/uploads/2023/12/龙鱼Pro用户手册-EN.pdf",
-  "https://ftp.idu.ac.id/.../Industrial%20System%20Engineering%20for%20Drones%20A%20Guide....pdf",
-  "https://ifr.org/downloads/press2018/2022_WR_extended_version.pdf",
+    # Direct PDFs
+    "https://dronecenter.bard.edu/files/2019/10/CSD-Drone-Databook-Web.pdf",
+    "https://www.autelrobotics.com/wp-content/uploads/2024/06/EN_EVO-Nano-Series-Aircraft-User-Manual_V3.0.6.pdf",
+    "https://www.autelrobotics.com/wp-content/uploads/2023/12/龙鱼Pro用户手册-EN.pdf",
+    "https://ftp.idu.ac.id/.../Industrial%20System%20Engineering%20for%20Drones%20A%20Guide....pdf",
+    "https://ifr.org/downloads/press2018/2022_WR_extended_version.pdf",
 
-  # Doc pages that link PDFs
-  "https://www.robotis.us/dynamixel-ax-12a/",
-  "https://www.robotis.us/dynamixel-xm540-w270-r/",
-  "https://www.nxp.com/design/design-center/.../px4-robotic-drone-vehicle-flight-management-unit-vmu-fmu",
-  "https://cases.haas.berkeley.edu/assets/documents/sample-cases/2015_2_3D_5826.pdf",
-  "https://www.ghostrobotics.io/vision-60",
-  "https://www.robotshop.com/",
-  "https://www.maritimerobotics.com/",
+    # Doc pages that link PDFs
+    "https://www.robotis.us/dynamixel-ax-12a/",
+    "https://www.robotis.us/dynamixel-xm540-w270-r/",
+    "https://www.nxp.com/design/design-center/.../px4-robotic-drone-vehicle-flight-management-unit-vmu-fmu",
+    "https://cases.haas.berkeley.edu/assets/documents/sample-cases/2015_2_3D_5826.pdf",
+    "https://www.ghostrobotics.io/vision-60",
+    "https://www.robotshop.com/",
+    "https://www.maritimerobotics.com/",
+
+    # Additional sources from feature branch
+    "https://www.maxongroup.com/en-us/news-and-events/media-center",
+    "https://www.tmotor.com/html/download/",
+    "https://raw.githubusercontent.com/ouster-lidar/ouster-sdk/master/doc/README.md",
 ]
-
 
 async def fetch_html(session: ClientSession, url: str) -> str:
     try:
@@ -41,7 +45,6 @@ async def fetch_html(session: ClientSession, url: str) -> str:
     except Exception as exc:  # pragma: no cover - network
         logger.warning("Error fetching %s: %s", url, exc)
         return ""
-
 
 def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
     """Return absolute PDF URLs discovered in ``html``.
@@ -65,7 +68,6 @@ def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
             links.append(href)
     return links
 
-
 async def download_pdf(session: ClientSession, url: str, dest: Path) -> None:
     async def _get() -> bytes:
         async with session.get(url) as resp:
@@ -76,7 +78,6 @@ async def download_pdf(session: ClientSession, url: str, dest: Path) -> None:
     await save_file(dest, content)
     await update_manifest(dest, url)
     logger.info("Saved %s", dest)
-
 
 async def crawl_vendors(session: ClientSession, workers: int = 32) -> None:
     tasks = []
