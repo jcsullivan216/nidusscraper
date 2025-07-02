@@ -13,6 +13,14 @@ from .config import DATA_DIR, logger
 from .utils import retry, save_file, update_manifest
 
 VENDOR_PAGES = [
+
+    "https://www.maxongroup.com/en-us/news-and-events/media-center",
+    "https://www.tmotor.com/html/download/",
+    "https://raw.githubusercontent.com/ouster-lidar/ouster-sdk/master/doc/README.md",
+]
+
+
+=======
   "https://dronecenter.bard.edu/files/2019/10/CSD-Drone-Databook-Web.pdf",
   "https://www.autelrobotics.com/wp-content/uploads/2024/06/EN_EVO-Nano-Series-Aircraft-User-Manual_V3.0.6.pdf",
   "https://www.autelrobotics.com/wp-content/uploads/2023/12/龙鱼Pro用户手册-EN.pdf",
@@ -41,12 +49,17 @@ async def fetch_html(session: ClientSession, url: str) -> str:
         logger.warning("Error fetching %s: %s", url, exc)
         return ""
 
+
+
+=======
+
 def extract_pdfs(html: str, base_url: str) -> Iterable[str]:
     """Return absolute PDF URLs discovered in ``html``.
 
     Uses :func:`urllib.parse.urljoin` to handle relative paths and replaces any
     Windows-style backslashes with forward slashes.
     """
+
     soup = BeautifulSoup(html, "html.parser")
     links: list[str] = []
     for a in soup.find_all("a", href=True):

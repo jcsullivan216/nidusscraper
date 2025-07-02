@@ -10,6 +10,7 @@ import aiohttp
 from .config import logger
 from .github import crawl_github
 from .vendors import crawl_vendors
+from .vendor_pages import crawl_vendor_pages
 from .standards import crawl_standards
 
 
@@ -19,6 +20,8 @@ async def run_crawlers(sources: Iterable[str], workers: int) -> None:
             await crawl_github(session, workers)
         if "vendor" in sources:
             await crawl_vendors(session, workers)
+        if "pages" in sources:
+            await crawl_vendor_pages(session, workers)
         if "standards" in sources:
             await crawl_standards(session, workers)
 
@@ -27,7 +30,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Nidus Scraper")
     parser.add_argument(
         "--sources",
-        default="urdf,vendor,standards",
+        default="urdf,vendor,standards,pages",
         help="Comma separated list of sources to crawl",
     )
     parser.add_argument("--workers", type=int, default=32)
