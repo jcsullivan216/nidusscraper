@@ -16,7 +16,10 @@ aiofiles = "^23.2"
 beautifulsoup4 = "^4.12"
 python-dotenv = "^1.0"
 tqdm = "^4.66"
+
 pyppeteer = "^1"
+=======
+
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"
