@@ -8,6 +8,7 @@ and [Poetry](https://python-poetry.org/).
 Install dependencies with Poetry:
 
 ```bash
+
 poetry install
 ```
 
@@ -29,3 +30,6 @@ poetry run crawl-all --workers 32
 ```
 
 Files are saved under `data_raw/<source>/` and listed in `data_raw/sources.csv`.
+=======
+poetry install
+
