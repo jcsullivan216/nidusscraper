@@ -10,12 +10,11 @@ from .config import DATA_DIR, logger
 from .utils import retry, save_file, update_manifest
 
 STANDARD_URLS = [
-    # XML schema files (stay the same)
+ # XML schema files (stay the same)
     "https://raw.githubusercontent.com/openjaus/openjaus-toolset/master/schema/jaus.xsd",
     "https://raw.githubusercontent.com/openjaus/openjaus-toolset/master/schema/jaus-mobility.xsd",
     # Actual STANAG 4586 PDF
     "https://archives.defense.gouv.fr/content/download/552732/9407966/file/4586eed3draft.pdf",
-    "https://example.com/stanag-4586-rev-c.pdf",
 ]
 
 
